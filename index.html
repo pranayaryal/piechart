@@ -20,7 +20,7 @@
   
 <body>
   
-  <div id ="doughnut"></div>
+  <div class="container"></div>
   <script>
     var data = [30,50,80,100];
     var r = 200;
@@ -28,7 +28,7 @@
     var color = d3.scale.ordinal()
         .range(["red","blue","orange","green"]);
     
-    var canvas = d3.select("#doughnut").append("svg")
+    var canvas = d3.select(".container").append("svg")
         .attr("width",900)
         .attr("height",600);
     
