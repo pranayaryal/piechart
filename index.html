@@ -1,102 +1,67 @@
 <!DOCTYPE html>
-<html>
-
+<meta charset="utf-8">
 <style>
-  h1{
-    margin: 40px 0 0 550px;
-    padding-bottom:0px;
-  }
 
- svg {
-    margin: 0 0 0 0;
-    padding-top:0px;
+.arc text {
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
 
-  }
+.arc path {
+  stroke: #fff;
+}
+
 </style>
-<head>
-  <title>Pie Chart</title>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
-</head>
-
 <body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
 
-  <div class="container">
-      <div class="row">
-        <h1>A Pie Chart</h1>
-      </div>
-      <div class="row">
-        <svg width="50" height="50" class="there">
-            <circle cx="20" cy="20" r="20" fill="green" />
-        </svg>
-      </div>
-      <div class="row">
-        <div class="piechart">
+var width = 960,
+    height = 500,
+    radius = Math.min(width, height) / 2;
 
-        </div>
-      </div>
+var color = d3.scale.ordinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-  </div>
-  <script>
-    var data = [30,50,80,100];
-    var r = 200;
+var arc = d3.svg.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(0);
 
-    var color = d3.scale.ordinal()
-        .range(["red","blue","orange","green"]);
+var labelArc = d3.svg.arc()
+    .outerRadius(radius - 40)
+    .innerRadius(radius - 40);
 
-    var canvas = d3.select(".piechart").append("svg")
-        .attr("width",700)
-        .attr("height",400);
+var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d) { return d.population; });
 
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+d3.csv("data.csv", type, function(error, data) {
+  if (error) throw error;
 
-    var group = canvas.append("g")
-        .attr("transform", "translate(650,300)");
+  var g = svg.selectAll(".arc")
+      .data(pie(data))
+    .enter().append("g")
+      .attr("class", "arc");
 
-
-    var p = Math.PI * 2;
-    var arc = d3.svg.arc()
-        .innerRadius(20)
-        .outerRadius(50);
-
-    var pie = d3.layout.pie()
-        .value(function(d){ return d;});
-
-    var arcs = group.selectAll(".arc")
-       .data(pie(data))
-       .enter()
-       .append("g")
-       .attr("class", "arc");
-
-    arcs.append("path")
+  g.append("path")
       .attr("d", arc)
-      .attr("fill",function (d){return color(d.data);});
+      .style("fill", function(d) { return color(d.data.age); });
 
-    arcs.append("text")
-        .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";})
-        .text(function (d) { return d.data;});
+  g.append("text")
+      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+      .attr("dy", ".35em")
+      .text(function(d) { return d.data.age; });
+});
 
+function type(d) {
+  d.population = +d.population;
+  return d;
+}
 
-
-
-
-
-
-
-
-  </script>
-
-
-
-
-</body>
-
-
-
-
-
-
-
-
-</html>
+</script>
